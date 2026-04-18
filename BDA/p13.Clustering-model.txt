@@ -1,0 +1,32 @@
+Software: Python editor
+
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.cluster import KMeans
+from sklearn.datasets import load_iris
+from sklearn.decomposition import PCA
+# Load Dataset
+data = load_iris()
+df = pd.DataFrame(data.data, columns=data.feature_names)
+# Apply K-Means Clustering
+kmeans = KMeans(n_clusters=3, random_state=42, n_init=10)
+kmeans.fit(df)
+
+df['Cluster'] = kmeans.labels_
+# Reduce Dimensions for Visualization
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(df[data.feature_names])
+df['PCA1'] = X_pca[:, 0]
+df['PCA2'] = X_pca[:, 1]
+# Plot Clusters
+plt.figure(figsize=(8, 6))
+sns.scatterplot(x=df['PCA1'], y=df['PCA2'], hue=df['Cluster'], palette='viridis', s=100,
+alpha=0.7)
+plt.title("K-Means Clustering on Iris Dataset")
+plt.xlabel("Principal Component 1")
+plt.ylabel("Principal Component 2")
+plt.legend(title="Cluster")
+plt.show()

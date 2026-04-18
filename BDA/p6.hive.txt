@@ -1,0 +1,55 @@
+___________________________________________________________________________________________
+
+#Step 1: Create Dataset
+%%writefile student_data.csv
+101,Amit,Data Science,85
+102,Neha,AI,90
+103,Rahul,Big Data,78
+104,Priya,Machine Learning,88
+105,Kiran,Data Analytics,92
+
+___________________________________________________________________________________________
+#Step 2: Install Java
+!apt-get install openjdk-8-jdk-headless -qq > /dev/null
+
+___________________________________________________________________________________________
+
+#Step 3: Download and Extract Hadoop
+!wget -q https://downloads.apache.org/hadoop/common/hadoop-3.3.6/hadoop3.3.6.tar.gz
+!tar -xzf hadoop-3.3.6.tar.gz
+
+___________________________________________________________________________________________
+
+#Step 4: Download and Extract Hive
+!wget -q https://downloads.apache.org/hive/hive-3.1.3/apache-hive-3.1.3-bin.tar.gz
+!tar -xzf apache-hive-3.1.3-bin.tar.gz
+
+___________________________________________________________________________________________
+
+#Step 5: Create Hive Table
+Hive Query:
+CREATE TABLE student(
+id INT,
+name STRING,
+course STRING,
+marks INT
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ',';
+
+___________________________________________________________________________________________
+
+#Step 6: Load Data into Hive Table
+LOAD DATA LOCAL INPATH 'student_data.csv'
+INTO TABLE student;
+
+___________________________________________________________________________________________
+
+#Step 7: Display Table Data
+SELECT * FROM student;
+
+___________________________________________________________________________________________
+
+#Step 8: Query Students with Marks > 85
+SELECT * FROM student
+WHERE marks > 85;
