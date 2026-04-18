@@ -1,0 +1,37 @@
+#Step 1: Install Java (Required for Hadoop)
+!apt-get install openjdk-8-jdk-headless -qq > /dev/null
+_________________________________________________________________________________________
+#Step 2: Download and Extract Hadoop
+!wget -q https://downloads.apache.org/hadoop/common/hadoop-3.3.6/hadoop-3.3.6.tar.gz
+!tar -xzf hadoop-3.3.6.tar.gz
+
+Set Hadoop environment:
+import os
+os.environ["HADOOP_HOME"] = "/content/hadoop-3.3.6"
+
+_______________________________________________________________________________________
+#Step 3: Install Apache Pig
+!wget -q https://downloads.apache.org/pig/pig-0.17.0/pig-0.17.0.tar.gz
+!tar -xzf pig-0.17.0.tar.gz
+
+_______________________________________________________________________________________
+#Step 4: Upload Dataset to HDFS (Simulation)
+!mkdir input
+!cp student_data.csv input/
+!ls input
+
+_________________________________________________________________________________________
+#Step 5: Create Pig Script
+%%writefile student.pig
+student_data = LOAD 'input/student_data.csv'
+USING PigStorage(',')
+AS (id:int, name:chararray, course:chararray, marks:int);
+-- Display dataset
+DUMP student_data;
+-- Filter students with marks greater than 85
+high_marks = FILTER student_data BY marks > 85;
+DUMP high_marks;
+
+__________________________________________________________________________________________
+#Step 6: Run Pig Script
+!pig pig-0.17.0/bin/pig student.pig

@@ -1,0 +1,153 @@
+!apt-get update -qq
+!apt-get install openjdk-11-jdk -qq
+
+
+!java -version
+
+!wget https://archive.apache.org/dist/hadoop/common/hadoop-3.3.6/hadoop-3.3.6.tar.gz
+
+#extract hadoop
+!tar -xzf hadoop-3.3.6.tar.gz
+
+
+!ls
+
+
+!mv hadoop-3.3.6 /usr/local/Hadoop
+
+!ls /usr/local/Hadoop
+
+
+#Set Environment variables
+import os
+os.environ["HADOOP_HOME"]= "/usr/local/hadoop"
+os.environ["JAVA_HOME"]="/usr/lib/jvm/java-11-openjdk-amd64"
+os.environ["PATH"] += ":/usr/local/hadoop/bin"
+os.environ["PATH"] += ":/usr/local/hadoop/sbin"
+
+
+!ls
+
+!hadoop version
+
+!find / -name core-site.xml 2>/dev/null
+
+# Configure Hadoop- edit Configuration files
+# Edit core-site.xml
+!sed -i 's|<configuration>|\
+<property>\
+<name>fs.defaultFS</name>\
+<value>hdfs://localhost:9000</value>\
+</property>\
+</configuration>|' /usr/local/hadoop/etc/hadoop/core-site.xml
+
+
+
+# Configure Hadoop- edit Configuration files
+# Edit hdfs-site.xml
+!sed -i 's|<configuration>|\
+<property>\
+<name>dfs.replication</name>\
+<value>1</value>\
+</property>\
+</configuration>|' /usr/local/hadoop/etc/hadoop/hdfs-site.xml
+
+
+#Format HDFS
+!hdfs namenode -format
+
+
+!echo 'export HDFS_NAMENODE_USER=root' >> ~/.bashrc
+!echo 'export HDFS_DATANODE_USER=root' >> ~/.bashrc
+!echo 'export HDFS_SECONDARYNAMENODE_USER=root' >> ~/.bashrc
+!echo 'export YARN_RESOURCEMANAGER_USER=root' >> ~/.bashrc
+!echo 'export YARN_NODEMANAGER_USER=root' >> ~/.bashrc
+
+!source ~/.bashrc
+
+
+%%writefile /usr/local/hadoop/etc/hadoop/core-site.xml
+<?xml version="1.0"?>
+<configuration>
+   <property>
+      <name>fs.defaultFS</name>
+      <value>hdfs://localhost:9000</value>
+   </property>
+</configuration>
+
+
+%%writefile /usr/local/hadoop/etc/hadoop/core-site.xml
+<?xml version="1.0"?>
+<configuration>
+   <property>
+      <name>fs.defaultFS</name>
+      <value>hdfs://localhost:9000</value>
+   </property>
+</configuration>
+
+!export HDFS_NAMENODE_USER=root
+!export HDFS_DATANODE_USER=root
+!export HDFS_SECONDARYNAMENODE_USER=root
+!export YARN_RESOURCEMANAGER_USER=root
+!export YARN_NODEMANAGER_USER=root
+
+
+!echo $HDFS_NAMENODE_USER
+
+
+%%writefile /usr/local/hadoop/etc/hadoop/hdfs-site.xml
+<?xml version="1.0"?>
+<configuration>
+
+   <property>
+      <name>dfs.replication</name>
+      <value>1</value>
+   </property>
+
+   <property>
+      <name>dfs.namenode.name.dir</name>
+      <value>file:///usr/local/hadoop/hdfs/namenode</value>
+   </property>
+
+   <property>
+      <name>dfs.datanode.data.dir</name>
+      <value>file:///usr/local/hadoop/hdfs/datanode</value>
+   </property>
+
+</configuration>
+
+
+!mkdir -p /usr/local/hadoop/hdfs/namenode
+!mkdir -p /usr/local/hadoop/hdfs/datanode
+
+
+!sed -i '$a export HDFS_NAMENODE_USER=root' /usr/local/hadoop/etc/hadoop/hadoop-env.sh
+!sed -i '$a export HDFS_DATANODE_USER=root' /usr/local/hadoop/etc/hadoop/hadoop-env.sh
+!sed -i '$a export HDFS_SECONDARYNAMENODE_USER=root' /usr/local/hadoop/etc/hadoop/hadoop-env.sh
+
+!tail -n 5 /usr/local/hadoop/etc/hadoop/hadoop-env.sh
+
+!java -version
+
+
+!apt-get update -qq
+!apt-get install openjdk-8-jdk -qq
+
+!readlink -f /usr/bin/java | sed "s:bin/java::"
+
+!sed -i 's|^export JAVA_HOME=.*|export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64|' /usr/local/hadoop/etc/hadoop/hadoop-env.sh
+
+!echo "export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64" >> /usr/local/hadoop/etc/hadoop/hadoop-env.sh
+
+!grep JAVA_HOME /usr/local/hadoop/etc/hadoop/hadoop-env.sh
+
+!export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+
+
+!hdfs --daemon start namenode
+!hdfs --daemon start datanode
+!hdfs --daemon start secondarynamenode
+
+!jps
+
+!ls
